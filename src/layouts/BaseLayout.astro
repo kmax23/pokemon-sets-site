@@ -1,0 +1,25 @@
+---
+interface Props { title?: string; description?: string; canonical?: string }
+const { title = 'Pokémon Sets', description = 'English Pokémon TCG sets, checklists, and price resources.', canonical } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+  </head>
+  <body class="min-h-screen text-gray-900">
+    <header class="max-w-6xl mx-auto p-4">
+      <a href="/" class="text-xl font-bold">Pokémon Sets</a>
+    </header>
+    <main class="max-w-6xl mx-auto p-4">
+      <slot />
+    </main>
+    <footer class="max-w-6xl mx-auto p-4 text-sm text-gray-600">
+      <p>© {new Date().getFullYear()} Pokemon Sets (fan resource). Not affiliated with Nintendo/Creatures/Game Freak.</p>
+    </footer>
+  </body>
+</html>

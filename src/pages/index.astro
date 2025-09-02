@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+const allSets = (await getCollection('sets')).sort((a, b) => new Date(b.data.releaseDate) - new Date(a.data.releaseDate));
+---
+<BaseLayout title="All English Pokémon TCG Sets">
+  <h1 class="text-2xl font-bold mb-4">All English Pokémon TCG Sets</h1>
+  <ul class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+    {allSets.map(({ data }) => (
+      <li class="border p-4 rounded-xl">
+        <a href={`/sets/${data.slug}/`} class="block">
+          <h2 class="font-semibold">{data.name}</h2>
+          <p class="text-sm">{data.series} • {data.releaseDate}</p>
+          <p class="text-xs text-gray-600">{data.totalCards} cards</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
