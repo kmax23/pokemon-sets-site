@@ -1,45 +1,26 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { cards } from '../../data/card.js';
+import { getAllCards, getCardBySlug } from "../../lib/firestore.server.js";
 
-// Example card data (hardcoded for now)
-// const cards = [
-//   { slug: 'charizard', name: 'Charizard', rarity: 'Rare', set: 'Base Set' },
-//   { slug: 'blastoise', name: 'Blastoise', rarity: 'Rare', set: 'Base Set' },
-//   { slug: 'venusaur', name: 'Venusaur', rarity: 'Rare', set: 'Base Set' },
-// ];
-
-// Generate paths
 export async function getStaticPaths() {
-  return cards.map(card => ({
-    params: { slug: card.slug }
-  }));
+  const cards = await getAllCards();
+  return cards.map(c => ({ params: { slug: c.slug } }));
 }
 
 const { slug } = Astro.params;
-const card = cards.find(c => c.slug === slug);
-if (!card) {
-  throw new Error(`Card not found: ${slug}`);
-}
+const card = await getCardBySlug(slug);
+if (!card) throw new Error(`Card not found: ${slug}`);
 ---
 
-<BaseLayout title={card.name} description={`Details for ${card.name}`}>
-  <div class="max-w-2xl mx-auto">
-    <img src={card.image} alt={card.name} class="w-full h-80 object-contain mb-6" />
+<BaseLayout title={`${card.name} — ${card.setName}`}>
+  <div class="max-w-2xl mx-auto bg-white rounded-xl p-6 shadow">
+    <img src={card.imageUrl} alt={card.name} class="w-full object-contain mb-6"/>
+    <h1 class="text-3xl font-bold">{card.name}</h1>
+    <p class="text-gray-600 mb-2">#{card.number} • {card.rarity} • {card.setName}</p>
 
-    <h1 class="text-3xl font-bold mb-2">{card.name}</h1>
-    <p class="text-gray-600 mb-4">{card.rarity} — from {card.set}</p>
-
-    <div class="space-y-2">
-      <a href="https://www.tcgplayer.com/" target="_blank" class="block bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
-        Buy on TCGplayer
-      </a>
-      <a href="https://www.ebay.com/" target="_blank" class="block bg-yellow-500 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-600">
-        Buy on eBay
-      </a>
-      <a href="https://www.amazon.com/" target="_blank" class="block bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">
-        Buy on Amazon
-      </a>
+    <div class="mt-4 space-y-2">
+      <a href={card.buyLink ?? "https://tcgplayer.com"} target="_blank" class="block bg-blue-600 text-white px-4 py-2 rounded">Buy on TCGplayer</a>
+      <p class="text-sm text-gray-500 mt-2">Affiliate disclosure: we may earn a commission for purchases.</p>
     </div>
   </div>
 </BaseLayout>

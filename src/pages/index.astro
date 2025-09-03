@@ -1,42 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllSets } from "../lib/firestore.server.js";
 
-const sets = [
-  { slug: "base-set", name: "Base Set", releaseDate: "1999", totalCards: 102 },
-  { slug: "jungle", name: "Jungle", releaseDate: "1999", totalCards: 64 },
-  { slug: "fossil", name: "Fossil", releaseDate: "1999", totalCards: 62 },
-];
+const sets = await getAllSets();
 ---
 
-<BaseLayout title="Pokémon Card Sets" description="Explore Pokémon TCG sets">
-<div class="mb-6 text-center">
-  <h1 class="text-4xl font-bold mb-8">Pokémon Card Sets</h1>
+<BaseLayout title="All Sets">
+  <h1 class="text-4xl font-bold mb-6">Pokémon Sets</h1>
 
-  <input
-    type="text"
-    placeholder="Search sets..."
-    class="w-full max-w-md mb-6 p-2 border rounded-lg shadow"
-    oninput="filterSets(this.value)"
-  />
-
-  <div id="setsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    {sets.map((set) => (
-      <a href={`/sets/${set.slug}/`} class="border rounded-lg shadow p-4 hover:bg-gray-50">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {sets.map(set => (
+      <a href={`/sets/${set.id}/`} class="block bg-white p-4 rounded-lg shadow hover:shadow-lg">
         <h2 class="text-xl font-semibold">{set.name}</h2>
-        <p class="text-sm text-gray-500">Released {set.releaseDate}</p>
+        <p class="text-sm text-gray-500">Released: {set.releaseDate}</p>
         <p class="text-sm text-gray-500">{set.totalCards} cards</p>
       </a>
     ))}
   </div>
-
-  <script>
-    function filterSets(query) {
-      const cards = document.querySelectorAll("#setsGrid a");
-      cards.forEach((el) => {
-        el.style.display = el.innerText.toLowerCase().includes(query.toLowerCase())
-          ? "block"
-          : "none";
-      });
-    }
-  </script>
 </BaseLayout>
