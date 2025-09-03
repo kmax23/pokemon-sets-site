@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchSets } from '../../lib/pokemontcg.js';
+
+const sets = await fetchSets();
+---
+
+<BaseLayout title="Pokémon TCG Sets">
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-4xl font-bold mb-6">Pokémon TCG Sets</h1>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      {sets.map(set => (
+        <a href={`/sets/${set.id}`} class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+          <div class="p-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">{set.name}</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{set.series}</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Cards: {set.total}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

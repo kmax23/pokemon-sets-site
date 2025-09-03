@@ -1,26 +1,37 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllCards, getCardBySlug } from "../../lib/firestore.server.js";
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchCard, fetchCardsBySet } from '../../lib/pokemontcg.js';
 
+// Provide paths for static generation
 export async function getStaticPaths() {
-  const cards = await getAllCards();
-  return cards.map(c => ({ params: { slug: c.slug } }));
+  // Option 1: fetch all cards from a set (or multiple sets) to pre-render
+  // For simplicity, let's pre-render just one set
+  const setId = 'base1'; // change if you want other sets
+  const cards = await fetchCardsBySet(setId);
+  return cards.map(card => ({ params: { slug: card.id } }));
 }
 
 const { slug } = Astro.params;
-const card = await getCardBySlug(slug);
-if (!card) throw new Error(`Card not found: ${slug}`);
+
+let card;
+try {
+  card = await fetchCard(slug);
+} catch (err) {
+  console.error(err);
+  throw new Error(`Failed to fetch card for slug: ${slug}`);
+}
 ---
 
-<BaseLayout title={`${card.name} — ${card.setName}`}>
-  <div class="max-w-2xl mx-auto bg-white rounded-xl p-6 shadow">
-    <img src={card.imageUrl} alt={card.name} class="w-full object-contain mb-6"/>
-    <h1 class="text-3xl font-bold">{card.name}</h1>
-    <p class="text-gray-600 mb-2">#{card.number} • {card.rarity} • {card.setName}</p>
-
-    <div class="mt-4 space-y-2">
-      <a href={card.buyLink ?? "https://tcgplayer.com"} target="_blank" class="block bg-blue-600 text-white px-4 py-2 rounded">Buy on TCGplayer</a>
-      <p class="text-sm text-gray-500 mt-2">Affiliate disclosure: we may earn a commission for purchases.</p>
+<BaseLayout title={card.name}>
+  <div class="max-w-3xl mx-auto p-6">
+    <h1 class="text-4xl font-bold mb-4">{card.name}</h1>
+    <img src={card.images.small} alt={card.name} class="w-full rounded-lg mb-4" />
+    <p class="mb-2"><strong>Set:</strong> {card.set.name}</p>
+    <p class="mb-2"><strong>Rarity:</strong> {card.rarity || 'Unknown'}</p>
+    <p class="mb-2"><strong>Type:</strong> {card.types?.join(', ') || 'Unknown'}</p>
+    <p class="mb-2"><strong>HP:</strong> {card.hp || 'Unknown'}</p>
+    <div class="mt-6">
+      <a href={`/sets/${card.set.id}`} class="text-blue-500 hover:underline">&larr; Back to {card.set.name}</a>
     </div>
   </div>
 </BaseLayout>

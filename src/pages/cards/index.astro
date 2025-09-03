@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchCards } from '../../lib/pokemontcg.js';
+
+const cards = await fetchCards(20); // Fetch first 20 cards for demo
+---
+
+<BaseLayout title="All Pokémon Cards">
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-4xl font-bold mb-6">Pokémon Cards</h1>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      {cards.map(card => (
+        <a href={`/cards/${card.id}`} class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+          <img src={card.images.small} alt={card.name} class="w-full h-48 object-cover" />
+          <div class="p-2">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">{card.name}</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-sm">{card.rarity || 'Unknown'}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

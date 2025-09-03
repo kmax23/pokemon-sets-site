@@ -1,38 +1,15 @@
 ---
-const { title = "Pokémon Site", description = "Pokémon Card Database" } = Astro.props;
+// BaseLayout.astro
 ---
 
 <html lang="en">
   <head>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524633691531456" crossorigin="anonymous"></script>
-    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-
-    <!-- Tailwind CSS -->
-    <link rel="stylesheet" href="/src/styles/global.css" />
+    <title>Pokemon TCG Tracker</title>
+    <link rel="stylesheet" href="/src/styles/global.css">
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900 font-sans">
-    <header class="bg-white shadow p-4 mb-6">
-      <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold">Pokémon Cards</a>
-        <nav class="space-x-4">
-          <a href="/" class="hover:underline">Home</a>
-          <a href="/about" class="hover:underline">About</a>
-          <a href="/disclosure" class="hover:underline">Disclosure</a>
-        </nav>
-      </div>
-    </header>
-
-    <main class="container mx-auto p-4">
-      <slot />
-    </main>
-
-    <footer class="bg-white shadow p-4 mt-10 text-center">
-      <p class="text-sm text-gray-500">© {new Date().getFullYear()} Pokémon Site</p>
-    </footer>
+  <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <slot />
   </body>
 </html>
