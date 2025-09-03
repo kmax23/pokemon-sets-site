@@ -1,12 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { cards } from '../../data/cards.js';
 
 // Example card data (hardcoded for now)
-const cards = [
-  { slug: 'charizard', name: 'Charizard', rarity: 'Rare', set: 'Base Set' },
-  { slug: 'blastoise', name: 'Blastoise', rarity: 'Rare', set: 'Base Set' },
-  { slug: 'venusaur', name: 'Venusaur', rarity: 'Rare', set: 'Base Set' },
-];
+// const cards = [
+//   { slug: 'charizard', name: 'Charizard', rarity: 'Rare', set: 'Base Set' },
+//   { slug: 'blastoise', name: 'Blastoise', rarity: 'Rare', set: 'Base Set' },
+//   { slug: 'venusaur', name: 'Venusaur', rarity: 'Rare', set: 'Base Set' },
+// ];
 
 // Generate paths
 export async function getStaticPaths() {
@@ -17,6 +18,9 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const card = cards.find(c => c.slug === slug);
+if (!card) {
+  throw new Error(`Card not found: ${slug}`);
+}
 ---
 
 <BaseLayout title={card.name} description={`Details for ${card.name}`}>
