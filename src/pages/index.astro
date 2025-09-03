@@ -1,19 +1,42 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
-const allSets = (await getCollection('sets')).sort((a, b) => new Date(b.data.releaseDate) - new Date(a.data.releaseDate));
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const sets = [
+  { slug: "base-set", name: "Base Set", releaseDate: "1999", totalCards: 102 },
+  { slug: "jungle", name: "Jungle", releaseDate: "1999", totalCards: 64 },
+  { slug: "fossil", name: "Fossil", releaseDate: "1999", totalCards: 62 },
+];
 ---
-<BaseLayout title="All English Pokémon TCG Sets">
-  <h1 class="text-2xl font-bold mb-4">All English Pokémon TCG Sets</h1>
-  <ul class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-    {allSets.map(({ data }) => (
-      <li class="border p-4 rounded-xl">
-        <a href={`/sets/${data.slug}/`} class="block">
-          <h2 class="font-semibold">{data.name}</h2>
-          <p class="text-sm">{data.series} • {data.releaseDate}</p>
-          <p class="text-xs text-gray-600">{data.totalCards} cards</p>
-        </a>
-      </li>
+
+<BaseLayout title="Pokémon Card Sets" description="Explore Pokémon TCG sets">
+<div class="mb-6 text-center">
+  <h1 class="text-4xl font-bold mb-8">Pokémon Card Sets</h1>
+
+  <input
+    type="text"
+    placeholder="Search sets..."
+    class="w-full max-w-md mb-6 p-2 border rounded-lg shadow"
+    oninput="filterSets(this.value)"
+  />
+
+  <div id="setsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {sets.map((set) => (
+      <a href={`/sets/${set.slug}/`} class="border rounded-lg shadow p-4 hover:bg-gray-50">
+        <h2 class="text-xl font-semibold">{set.name}</h2>
+        <p class="text-sm text-gray-500">Released {set.releaseDate}</p>
+        <p class="text-sm text-gray-500">{set.totalCards} cards</p>
+      </a>
     ))}
-  </ul>
+  </div>
+
+  <script>
+    function filterSets(query) {
+      const cards = document.querySelectorAll("#setsGrid a");
+      cards.forEach((el) => {
+        el.style.display = el.innerText.toLowerCase().includes(query.toLowerCase())
+          ? "block"
+          : "none";
+      });
+    }
+  </script>
 </BaseLayout>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// Hardcoded sets (later we’ll move these to a central JSON/data file)
+const sets = [
+  { slug: "base-set", name: "Base Set", releaseDate: "1999", totalCards: 102 },
+  { slug: "jungle", name: "Jungle", releaseDate: "1999", totalCards: 64 },
+  { slug: "fossil", name: "Fossil", releaseDate: "1999", totalCards: 62 },
+];
+
+// Generate paths for static builds
+export function getStaticPaths() {
+  return sets.map((set) => ({
+    params: { slug: set.slug },
+    props: { set },
+  }));
+}
+
+// Props available for rendering
+const { set } = Astro.props;
+
+// Example hardcoded card data for this set
+const cards = [
+  { slug: "charizard", name: "Charizard", rarity: "Rare Holo", image: "https://via.placeholder.com/200" },
+  { slug: "blastoise", name: "Blastoise", rarity: "Rare Holo", image: "https://via.placeholder.com/200" },
+  { slug: "venusaur", name: "Venusaur", rarity: "Rare Holo", image: "https://via.placeholder.com/200" },
+];
+---
+
+<BaseLayout title={set.name} description={`Pokémon cards in the ${set.name} set`}>
+  <h1 class="text-3xl font-bold mb-6">{set.name} ({set.releaseDate})</h1>
+  <p class="text-gray-600 mb-8">{set.totalCards} total cards</p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {cards.map((card) => (
+      <a href={`/cards/${card.slug}/`} class="border rounded-lg shadow hover:shadow-lg p-4">
+        <img src={card.image} alt={card.name} class="w-full h-40 object-contain mb-2" />
+        <h2 class="font-semibold">{card.name}</h2>
+        <p class="text-sm text-gray-500">{card.rarity}</p>
+      </a>
+    ))}
+  </div>
+</BaseLayout>
