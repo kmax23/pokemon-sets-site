@@ -1,38 +1,42 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { fetchCard, fetchCardsBySet } from '../../lib/pokemontcg.js';
+import { fetchCardsBySet, fetchCard } from '../../lib/pokemontcg.js';
 
 // Provide paths for static generation
 export async function getStaticPaths() {
-  // Option 1: fetch all cards from a set (or multiple sets) to pre-render
-  // For simplicity, let's pre-render just one set
   const setId = 'base1'; // change if you want other sets
   const cards = await fetchCardsBySet(setId);
-  const limited = cards.slice(0, 50);
-  return limited.map((card) => ({ params: { slug: card.id }, props: {card}, }));
+
+  // ✅ only generate static pages for the first 20 cards to keep build fast
+  return cards.slice(0, 20).map(card => ({
+    params: { slug: card.id },
+  }));
 }
 
 const { slug } = Astro.params;
 
-let card;
-try {
-  card = await fetchCard(slug);
-} catch (err) {
-  console.error(err);
-  throw new Error(`Failed to fetch card for slug: ${slug}`);
-}
+// ✅ Safe fetch with fallback
+let card = await fetchCard(slug);
 ---
 
-<BaseLayout title={card.name}>
+<BaseLayout title={card?.name || 'Card not found'}>
   <div class="max-w-3xl mx-auto p-6">
-    <h1 class="text-4xl font-bold mb-4">{card.name}</h1>
-    <img src={card.images.small} alt={card.name} class="w-full rounded-lg mb-4" />
-    <p class="mb-2"><strong>Set:</strong> {card.set.name}</p>
-    <p class="mb-2"><strong>Rarity:</strong> {card.rarity || 'Unknown'}</p>
-    <p class="mb-2"><strong>Type:</strong> {card.types?.join(', ') || 'Unknown'}</p>
-    <p class="mb-2"><strong>HP:</strong> {card.hp || 'Unknown'}</p>
-    <div class="mt-6">
-      <a href={`/sets/${card.set.id}`} class="text-blue-500 hover:underline">&larr; Back to {card.set.name}</a>
-    </div>
+    {card ? (
+      <>
+        <h1 class="text-4xl font-bold mb-4">{card.name}</h1>
+        <img src={card.images.small} alt={card.name} class="w-full rounded-lg mb-4" />
+        <p class="mb-2"><strong>Set:</strong> {card.set.name}</p>
+        <p class="mb-2"><strong>Rarity:</strong> {card.rarity || 'Unknown'}</p>
+        <p class="mb-2"><strong>Type:</strong> {card.types?.join(', ') || 'Unknown'}</p>
+        <p class="mb-2"><strong>HP:</strong> {card.hp || 'Unknown'}</p>
+        <div class="mt-6">
+          <a href={`/sets/${card.set.id}`} class="text-blue-500 hover:underline">
+            &larr; Back to {card.set.name}
+          </a>
+        </div>
+      </>
+    ) : (
+      <p class="text-red-500">⚠️ Card data unavailable.</p>
+    )}
   </div>
 </BaseLayout>
