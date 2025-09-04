@@ -7,7 +7,7 @@ export async function getStaticPaths() {
   // Option 1: fetch all cards from a set (or multiple sets) to pre-render
   // For simplicity, let's pre-render just one set
   const setId = 'base1'; // change if you want other sets
-  const cards = await fetchCardsBySet(setId);\
+  const cards = await fetchCardsBySet(setId);
   const limited = cards.slice(0, 50);
   return limited.map((card) => ({ params: { slug: card.id }, props: {card}, }));
 }
