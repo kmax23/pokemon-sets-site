@@ -31,3 +31,12 @@ export async function fetchCardsBySet(setId) {
 export async function fetchCard(id) {
   return await getJSON(`${BASE}/cards/${id}`);
 }
+
+// 🔥 NEW: General fetchCards function
+export async function fetchCards(limit = 20, page = 1) {
+  const res = await fetch(`${BASE}/cards?pageSize=${limit}&page=${page}`, {
+    headers: { 'X-Api-Key': API_KEY }
+  });
+  const data = await res.json();
+  return data.data;
+}
